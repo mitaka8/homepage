@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="./bootstrap.min.css"/>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+	<title>Homepage</title>
+</head>
+<body>
+	<div class="container-fluid mt-3" style="min-height: 100VH">
+		<div class="row">
+			<div class="col">
+				<h1 id="document-title"> </h1>
+				<div class="card-columns" id="main"></div>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-3 offset-md-9 col-12">
+				<div class="card">
+					<div class="card-body">
+						<label for="key-input"><i class="material-icons tiny">share</i> Share ID:</label>
+						<input id="key-input" class="form-control"></input>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12 col-sm-1">
+				<span class="badge text-white bg-blue">blue</span>
+				<span class="badge text-white bg-indigo">indigo</span>
+				<span class="badge text-white bg-purple">purple</span>
+				<span class="badge text-white bg-pink">pink</span>
+				<span class="badge text-white bg-red">red</span>
+				<span class="badge text-dark bg-orange">orange</span>
+				<span class="badge text-dark bg-yellow">yellow</span>
+				<span class="badge text-white bg-green">green</span>
+				<span class="badge text-white bg-teal">teal</span>
+				<span class="badge text-white bg-cyan">cyan</span>
+				<span class="badge text-dark bg-white">white</span>
+				<span class="badge text-white bg-gray">gray</span>
+				<span class="badge text-white bg-gray-dark">gray-dark</span>
+
+			</div>
+			<div class="col-12 col-sm-11">
+				<label for="json-editor">JSON Editor</label>
+				<textarea class="form-control text-monospace h-100 mb-1" id="json-editor"></textarea>
+				<label for="json-editor-key" title="">JSON Key</label>
+				<input class="form-control" id="json-editor-key"/>
+				<button class="btn btn-secondary" id="update">Update View</button>
+				<button class="btn btn-primary" id="save">Save</button>
+			</div>
+		</div>
+	</div>
+	<style>
+.text-blue{color: var(--blue);}
+.text-indigo{color: var(--indigo);}
+.text-purple {color: var(--purple);}
+.text-pink{color: var(--pink);}
+.text-red{color: var(--red);}
+.text-orange{color: var(--orange);}
+.text-yellow{color: var(--yellow);}
+.text-green{color: var(--green);}
+.text-teal{color: var(--teal);}
+.text-cyan{color: var(--cyan);}
+.text-white{color: var(--white);}
+.text-gray{color: var(--gray);}
+.text-gray-dark{color: var(--gray-dark);}
+
+
+.bg-blue{background-color: var(--blue);}
+.bg-indigo{background-color: var(--indigo);}
+.bg-purple {background-color: var(--purple);}
+.bg-pink{background-color: var(--pink);}
+.bg-red{background-color: var(--red);}
+.bg-orange{background-color: var(--orange);}
+.bg-yellow{background-color: var(--yellow);}
+.bg-green{background-color: var(--green);}
+.bg-teal{background-color: var(--teal);}
+.bg-cyan{background-color: var(--cyan);}
+.bg-white{background-color: var(--white);}
+.bg-gray{background-color: var(--gray);}
+.bg-gray-dark{background-color: var(--gray-dark);}
+
+.border-blue{border-color: var(--blue);}
+.border-indigo{border-color: var(--indigo);}
+.border-purple {border-color: var(--purple);}
+.border-pink{border-color: var(--pink);}
+.border-red{border-color: var(--red);}
+.border-orange{border-color: var(--orange);}
+.border-yellow{border-color: var(--yellow);}
+.border-green{border-color: var(--green);}
+.border-teal{border-color: var(--teal);}
+.border-cyan{border-color: var(--cyan);}
+.border-white{border-color: var(--white);}
+.border-gray{border-color: var(--gray);}
+.border-gray-dark{border-color: var(--gray-dark);}
+
+
+
+.material-icons.tiny {vertical-align: bottom;}
+@media (min-width: 768px) {
+	.card-columns {
+		column-count: 3;
+	}
+}
+
+@media (min-width: 1100px) {
+	.card-columns {
+		column-count: 5;
+	}
+	
+}
+
+body {
+	background-attachment: fixed;
+	background-position: center;
+	background-size: cover;
+
+</style>
+	<style id="custom-style"></style>
+</body>
+	<script>
+		let config = {};
+		let main;
+		let jsonEditor;
+		let jsonEditorKey;
+		let keyInput;
+		let jsonEditorUpdateViewButton;
+		let jsonEditorSaveButton;
+		function setIntervalI(f, t) {
+			f();
+			return setInterval(f,t);
+		}
+
+		/** @return {Promise} */
+		function getElementsFromRSS(resource) {
+			return fetch('https://aphilian.nl/rss.php?r=' + encodeURIComponent(resource)).then(r => r.text()).then(res => {
+    				parser = new DOMParser();
+    				xmlDoc = parser.parseFromString(res, "text/xml");
+				let rssElem = xmlDoc.children[0];
+				return Array.prototype.map.call(rssElem.children[0].children, item => {
+					if (item.children.length === 0) return null;
+					return {
+						title: item.children[0].textContent,
+						link: item.children[1].textContent,
+					}
+				}).filter(x => x !== null);
+			})
+
+		}
+
+		function h(tag, attributes = {}, children = []) {
+			let element = document.createElement(tag);
+			
+			for(let key in attributes) {
+				if (!Object.hasOwnProperty.call(attributes, key)) continue;
+				element.setAttribute(key, attributes[key]);
+			}
+			
+			children.forEach(child => {
+				// Skip over empties
+				if (typeof child === "undefined" || child === null) return; 
+
+				if (typeof child === "string") {
+					let childText = document.createTextNode(child);
+					element.appendChild(childText);
+					return;
+				}
+
+				element.appendChild(child)
+			});
+			return element;
+		}
+
+		function widget(w) {
+			switch (w.widget) {
+				case 'clock':
+					let clockText = h('h3', {'class' : 'card-title'}, ['']);
+					let dateText = h('span', {}, ['']);
+					let element = h("div", {'class': 'card bg-dark'}, [
+						h('div', {'class': 'card-body'}, [
+							clockText,
+							dateText
+						])
+					]);
+					setIntervalI(() => {
+						let hours = (new Date).getHours().toString().padStart(2, "0");
+						let minutes = (new Date).getMinutes().toString().padStart(2, "0");
+						let year = (new Date).getFullYear().toString();
+						let month = ((new Date).getMonth() + 1).toString().padStart(2, "0");
+						let date = (new Date).getDate().toString().padStart(2, "0");
+						
+						if (clockText.firstChild.nodeValue !== `${hours}:${minutes}`) {
+							clockText.firstChild.nodeValue = `${hours}:${minutes}`
+						}
+
+						if (dateText.firstChild.nodeValue !== `${year}-${month}-${date}`) {
+							dateText.firstChild.nodeValue = `${year}-${month}-${date}`;
+						}
+					}, 500);
+					return element;
+
+				case 'buienradar':
+					return h('div', {'class': 'card'}, [
+						h('div', {'class': 'card-header'}, ['Weather Report by ', h('a', {'href': 'https://buienradar.nl/', 'target': '_blank', 'rel': 'nofollow'}, ['Buienradar']), '.']),
+						h('img', {'class': 'card-img','src': 'https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256'}, [])
+					]);
+				
+				case 'knmi':
+					return h('div', {'class': 'card'}, [
+						h('div', {'class': 'card-header'}, ['Weather Report by ', h('a', {'href': 'https://knmi.nl/', 'target': '_blank', 'rel': 'nofollow'}, ['KNMI']), '.']),
+						h('img', {'class': 'card-img', 'title': 'Weather by KNMI', 'src': 'https://cdn.knmi.nl/knmi/map/general/weather-map.gif'}, [])
+					]);
+				case 'rss':
+					let list = h('div', {'class': 'list-group list-group-flush'}, []);
+					let updateLinks = () => {
+						getElementsFromRSS(w.resource).then(links => {
+							
+							while (list.firstChild) {
+								list.removeChild(list.firstChild);
+							}
+							links.slice(0,5).forEach(link => {
+								list.appendChild(h('li', {'class':'list-group-item'}, [
+									h('a', {'href': link.link, 'rel': 'nofollow', 'target': '_blank'}, [link.title])
+								]));
+							})
+						});
+					}
+					setIntervalI(updateLinks, 3000000);
+					return h('div', {'class': 'card'}, [
+						h('div', {'class': 'card-header'}, [w.title]),
+						list,
+					]);
+						
+				default:
+					return h('div', {'class': 'card'}, [h('div', {'class': 'card-body text-white bg-danger'}, ['Unknown Widget Type: ' + name])])
+
+			}
+		}
+
+		function list(l) {
+			return h(
+				'div', 
+				{'class': 'card' + (Array.isArray(l.classes) ? (' ' + l.classes.join(' ')) : ""), 'id': typeof l.title === "string" ? "list-"+l.title.toLowerCase().replaceAll(/\s\.\_\\\//g, "-") : undefined}, 
+				[
+					h('div', {'class': 'card-body'}, [
+						h('h3', {'class': 'card-title mb-0' + (typeof l.color === "string" ? " text-" + l.color : "") }, [
+							typeof l.icon === 'string' ? h('i', {'class': 'material-icons tiny'}, [l.icon]) : null,
+							typeof l.icon === 'string' ? " ": null,
+							l.title
+						]),
+					]),
+                                        h('ul', {'class': 'list-group list-group-flush'}, l.links.map(link =>
+                                                h('li', {'class':'list-group-item d-flex justify-content-between align-items-center'}, [
+                                                         h('a', {'rel': 'noopener', 'target':'_blank', 'href': link.href, 'title': link.title, "class": typeof link.color === "string" ? "text-" + link.color : null}, [link.title]), 
+							 " ",
+                                                         typeof link.icon === 'string' ? h('i', {'class': 'material-icons tiny' + (typeof link.color === "string" ? " text-" + link.color : '')}, [link.icon]) : null,
+                                                ])
+                                        )),
+				]
+			)
+		}
+
+		function renderMain() {
+			while (main.firstChild) {
+				main.removeChild(main.firstChild);
+			}
+			config.links.forEach(element => {
+				switch (element.type) {
+					case 'widget':
+						main.appendChild(widget(element));
+						break;
+					case undefined:
+					default:
+						main.appendChild(list(element));
+				}
+			});
+
+			if(typeof config.title === "string") {
+				document.title = config.title;
+				document.getElementById('document-title').firstChild.nodeValue = config.title;
+			}
+
+			if (typeof config.wallpaper === "string") {
+				document.body.style.backgroundImage = `url("${config.wallpaper}")`;
+			}
+
+
+			if (typeof config.style === "string") {
+				let style = document.getElementById('custom-style');
+
+				while (style.firstChild) {
+					style.removeChild(style.firstChild);
+				}
+
+				style.appendChild(document.createTextNode(config.style));
+			}
+		}
+
+		
+		function setup() {
+			main = document.getElementById('main');
+			keyInput = document.getElementById('key-input');
+			jsonEditor = document.getElementById('json-editor');
+			jsonEditorUpdateButton = document.getElementById('update');
+			jsonEditorKey = document.getElementById('json-editor-key');
+			jsonEditorSaveButton = document.getElementById('save');
+	
+			if(location.hash !== "" && location.hash.length === 129) {
+				localStorage.setItem('links-id', location.hash.substr(1));
+			}
+
+			let linkId = localStorage.getItem('links-id');
+			if (linkId === null || linkId === "") {
+				linkId = "";
+				config = {"title": "My Homepage", "links": [{"type":"widget", "widget": "knmi"}]};
+				renderMain();
+				document.getElementById('json-editor').value = JSON.stringify(config," ", 4);
+			} else {
+				if (localStorage.getItem('config-' + linkId) !== null) {
+					config = JSON.parse(localStorage.getItem('config-' + linkId));
+					renderMain();
+					document.getElementById('json-editor').value = JSON.stringify(config," ", 4);
+				} else {
+					fetch('config/' + linkId + '.json')
+					.then(res => res.json()).then(c => {
+						config = c;
+						renderMain();
+						document.getElementById('json-editor').value = JSON.stringify(c," ", 4);
+						localStorage.setItem('config-' + linkId, JSON.stringify(c));
+					}).catch(e => {
+						errorHandler(e);
+					});
+				}
+			}
+
+			// Input set ID
+			keyInput.addEventListener("change", ev => {
+				localStorage.setItem('links-id', ev.target.value);
+				location.reload();
+			});
+			keyInput.value = localStorage.getItem("links-id");
+			
+			jsonEditorUpdateButton.addEventListener("click", ev => {
+				try {
+					config = JSON.parse(jsonEditor.value);
+					renderMain();
+				} catch(e) {
+					errorHandler(e);
+				}
+			});
+
+			jsonEditorSaveButton.addEventListener("click", ev => {
+				try {
+					config = JSON.parse(jsonEditor.value);
+					renderMain();
+					save(jsonEditor.value, jsonEditorKey.value);
+				} catch(e) {
+
+					errorHandler(e);
+				}
+			});
+		}
+
+		function save(config, key) {
+			if (key.length === 0) {
+				throw new Error("Key can not be 0");
+			}
+			if (config.length === 0) {
+				throw new Error("JSON Config can not be 0");
+			}
+			
+			let fd = new FormData();
+			fd.append("config", config);
+			fd.append("key", key);
+
+			fetch("/upload.php", {method:"POST", body: fd}).then(res => res.text()).then(key => {
+				keyInput.value = key;
+				localStorage.setItem('links-id', key);
+				location.hash = key;
+			});
+		}
+
+		function updateView() {
+			let c = JSON.parse(jsonEditor.value);
+		}
+
+		function errorHandler(err) {
+			main.appendChild(h('h', {'class': 'col'}, [h('div', {'class': 'alert alert-danger'}, [err.toString()])]))
+			console.error(err);
+		}
+
+		document.addEventListener('readystatechange', () => {
+			if (document.readyState !== 'complete') return;
+			setup();
+		});
+
+	</script>
+</html>
