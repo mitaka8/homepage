@@ -8,7 +8,7 @@
 	<title>Homepage</title>
 </head>
 <body>
-	<div class="container-fluid mt-3" style="min-height: 100VH">
+	<div class="container-fluid mt-3" style="min-height: 110VH">
 		<div class="row">
 			<div class="col">
 				<h1 id="document-title"> </h1>
@@ -46,11 +46,59 @@
 			</div>
 			<div class="col-12 col-sm-11">
 				<label for="json-editor">JSON Editor</label>
-				<textarea class="form-control text-monospace h-100 mb-1" id="json-editor"></textarea>
+				<textarea class="form-control text-monospace mb-1" rows="14" id="json-editor"></textarea>
 				<label for="json-editor-key" title="">JSON Key</label>
 				<input class="form-control" id="json-editor-key"/>
 				<button class="btn btn-secondary" id="update">Update View</button>
 				<button class="btn btn-primary" id="save">Save</button>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<h2>Docs on the JSON values</h2>
+				<p>
+					The top-level object is the root of the JSON structure.  It's between the first pair of curly braces (<code>{}</code>).
+					This is where you define global settings for the page.  Such as Style, wallpaper and title.
+				</p>
+				<p>
+					The following settings are supported in the top-level object.
+				</p>
+				<ul>
+					<li><code>title</code> - The page title (which is the big header at the top of the page and on the tab)</li>
+					<li><code>style</code> - CSS to inject into the page.  This is useful for theming your homepage to your liking.</li>
+					<li><code>searchKey</code> - The keystroke that triggers the search popup to appear. (default: \)</li>
+					<li><code>wallpaper</code> - the URL to the background image to use.</li>
+					<li><code>links</code> - The list of widgets that are rendered on the page.</li>
+				</ul>
+				<h3>The links list</h3>
+				<p>
+				This list defined as <code>.links</code> is the list of widgets that are rendered on the page.  The following widgets are supported and allowed:
+				</p>
+				<ul>
+					<li>list - A list of links to show.  Takes as arguments: a list of Link objects, an icon name (as per material design icons), a title, and a color.</li>
+					<li>clock - A digital clock that shows the current time and date of your system. Takes no arguments.</li>
+					<li>buienrader - A weathermap of The Netherlands. Takes no arguments.</li>
+					<li>knmi - A weathermap of The Netherlands. Takes no arguments.</li>
+					<li>rss - A simple RSS feed reader.  Takes as arguments: resource: the url to the feed to read.</li>
+				</ul>
+				<h4>The link object</h4>
+				<p>The link object takes as arguments: title=the name of the link, href=the URL to point to, color=the color of the element, icon=a material design icon to show, shortcutKey=a sequence of keys to press to navigate to this url (mousetrap syntax).</p>
+			</div>
+		</div>
+	</div>
+	<div class="modal hidden" id="search-modal">
+		<div class="container" id="search-container">
+			<div class="body">
+				<div class="card">
+					<h4 class="card-header">Search</h4>
+					<div class="card-body">
+						<div class="form-group">
+							<input id="search-input" class="form-control" placeholder="Search on DuckDuckGo"/>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -118,10 +166,33 @@ body {
 	background-attachment: fixed;
 	background-position: center;
 	background-size: cover;
+}
+
+.modal {
+  background-color: rgba(0,0,0,0.4); /* Transparent dimmed overlay */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: table;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal .container {
+ display: table-cell;
+ text-align: center;
+ vertical-align: middle;
+ width: 200px;
+}
 
 </style>
-	<style id="custom-style"></style>
+<style id="custom-style"></style>
 </body>
+	<script src="mousetrap.min.js"></script>
 	<script>
 		let config = {};
 		let main;
@@ -244,7 +315,7 @@ body {
 		function list(l) {
 			return h(
 				'div', 
-				{'class': 'card' + (Array.isArray(l.classes) ? (' ' + l.classes.join(' ')) : ""), 'id': typeof l.title === "string" ? "list-"+l.title.toLowerCase().replaceAll(/\s\.\_\\\//g, "-") : undefined}, 
+				{'class': 'card' + (Array.isArray(l.classes) ? (' ' + l.classes.join(' ')) : ""), 'id': typeof l.title === "string" ? "list-"+l.title.toLowerCase().replace(/\s\.\_\\\//g, "-") : undefined}, 
 				[
 					h('div', {'class': 'card-body'}, [
 						h('h3', {'class': 'card-title mb-0' + (typeof l.color === "string" ? " text-" + l.color : "") }, [
@@ -253,13 +324,20 @@ body {
 							l.title
 						]),
 					]),
-                                        h('ul', {'class': 'list-group list-group-flush'}, l.links.map(link =>
-                                                h('li', {'class':'list-group-item d-flex justify-content-between align-items-center'}, [
+					h('ul', {'class': 'list-group list-group-flush'}, l.links.map(link => {
+                                                if (typeof link.shortcutKey === "string") {
+							Mousetrap.bind(link.shortcutKey, () => open(link.href, "", "noopener"));
+						}
+						
+						return h('li', {'class':'list-group-item d-flex justify-content-between align-items-center'}, [
                                                          h('a', {'rel': 'noopener', 'target':'_blank', 'href': link.href, 'title': link.title, "class": typeof link.color === "string" ? "text-" + link.color : null}, [link.title]), 
 							 " ",
-                                                         typeof link.icon === 'string' ? h('i', {'class': 'material-icons tiny' + (typeof link.color === "string" ? " text-" + link.color : '')}, [link.icon]) : null,
+							h('div', {}, [
+								typeof link.icon === 'string' ? h('i', {'class': 'material-icons tiny' + (typeof link.color === "string" ? " text-" + link.color : '')}, [link.icon]) : null,
+								" ", typeof link.shortcutKey === "string" ? h('kbd', {}, [link.shortcutKey]) : null,
+							]),
                                                 ])
-                                        )),
+					})),
 				]
 			)
 		}
@@ -362,6 +440,27 @@ body {
 
 					errorHandler(e);
 				}
+			});
+
+				let input = document.getElementById('search-input');
+
+			let searchModal = document.getElementById('search-modal');
+
+			Mousetrap(input).bind('enter', () => {
+				console.log('test');
+				open('https://duckduckgo.com/?q=' + input.value.replace(/\s/g, '+'), '', 'noopener');
+				input.value = "";
+				searchModal.classList.add('hidden');
+			});
+			Mousetrap(input).bind('escape', () => {
+				input.value = "";
+				searchModal.classList.add('hidden');
+				Mousetrap.unbind('escape');
+			});
+	
+			Mousetrap.bind(typeof config.searchKey === "string" ? config.searchKey : '\\', () => {
+				searchModal.classList.remove('hidden');
+				input.focus();
 			});
 		}
 
