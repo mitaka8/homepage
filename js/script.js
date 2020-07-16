@@ -141,8 +141,10 @@ function list(l) {
 					link.title,  
 					" ",
 					h('div', {}, [
-						typeof link.icon === 'string' ? h('i', {'class': 'material-icons tiny' + (typeof link.color === "string" ? " text-" + link.color : '')}, [link.icon]) : null,
-						" ", typeof link.shortcutKey === "string" ? h('kbd', {'class':'d-none d-sm-inline'}, [link.shortcutKey]) : null,
+						typeof link.shortcutKey === "string" ? h('kbd', {'class':'d-none d-sm-inline'}, [link.shortcutKey]) : null,
+						" ",
+
+						typeof link.icon === 'string' ? h('i', {'class': 'material-icons tiny' + (typeof link.color === "string" ? " text-" + link.color : '')}, [link.icon]) : null
 					]),
 				])
 			})),
