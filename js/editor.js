@@ -1,6 +1,5 @@
 		let jsonEditor;
 		let jsonEditorKey;
-		let keyInput;
 		let jsonEditorUpdateViewButton;
 		let jsonEditorSaveButton;
 
@@ -29,18 +28,12 @@ function updateView() {
 		}
 
 function setupEditor() {
-	keyInput = document.getElementById('key-input');
 	jsonEditor = document.getElementById('json-editor');
 	jsonEditorUpdateButton = document.getElementById('update');
 	jsonEditorKey = document.getElementById('json-editor-key');
 	jsonEditorSaveButton = document.getElementById('save');
 
-	// Input set ID
-	keyInput.addEventListener("change", ev => {
-		localStorage.setItem('links-id', ev.target.value);
-		location.reload();
-	});
-	keyInput.value = localStorage.getItem("links-id");
+
 	
 	jsonEditorUpdateButton.addEventListener("click", ev => {
 		try {

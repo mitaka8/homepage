@@ -1,5 +1,6 @@
 let config = {};
 let main;
+let keyInput;
 function setIntervalI(f, t) {
 	f();
 	return setInterval(f,t);
@@ -186,6 +187,7 @@ function renderMain() {
 		
 function setup() {
 	main = document.getElementById('main');
+	keyInput = document.getElementById('key-input');
 	if(location.hash !== "" && location.hash.length === 129) {
 		localStorage.setItem('links-id', location.hash.substr(1));
 	}
@@ -193,55 +195,59 @@ function setup() {
 	let linkId = localStorage.getItem('links-id');
 	if (linkId === null || linkId === "") {
 		linkId = "";
-				config = {"title": "My Homepage", "links": [{"type":"widget", "widget": "knmi"}]};
+		config = {"title": "My Homepage", "links": [{"type":"widget", "widget": "knmi"}]};
+		renderMain();
+	} else {
+		if (localStorage.getItem('config-' + linkId) !== null) {
+			config = JSON.parse(localStorage.getItem('config-' + linkId));
+			renderMain();
+		} else {
+			fetch('config/' + linkId + '.json')
+			.then(res => res.json()).then(c => {
+				config = c;
 				renderMain();
-				//document.getElementById('json-editor').value = JSON.stringify(config," ", 4);
-			} else {
-				if (localStorage.getItem('config-' + linkId) !== null) {
-					config = JSON.parse(localStorage.getItem('config-' + linkId));
-					renderMain();
-					//document.getElementById('json-editor').value = JSON.stringify(config," ", 4);
-				} else {
-					fetch('config/' + linkId + '.json')
-					.then(res => res.json()).then(c => {
-						config = c;
-						renderMain();
-						//
-						localStorage.setItem('config-' + linkId, JSON.stringify(c));
-					}).catch(e => {
-						errorHandler(e);
-					});
-				}
-			}
-
-			let input = document.getElementById('search-input');
-
-			let searchModal = document.getElementById('search-modal');
-
-			Mousetrap(input).bind('enter', () => {
-				console.log('test');
-				open('https://duckduckgo.com/?q=' + input.value.replace(/\s/g, '+'), '', 'noopener');
-				input.value = "";
-				searchModal.classList.add('hidden');
-			});
-			Mousetrap(input).bind('escape', () => {
-				input.value = "";
-				searchModal.classList.add('hidden');
-				Mousetrap.unbind('escape');
-			});
-	
-			Mousetrap.bind(typeof config.searchKey === "string" ? config.searchKey : '\\', () => {
-				searchModal.classList.remove('hidden');
-				input.focus();
+				localStorage.setItem('config-' + linkId, JSON.stringify(c));
+			}).catch(e => {
+				errorHandler(e);
 			});
 		}
-		function errorHandler(err) {
-			main.appendChild(h('h', {'class': 'col'}, [h('div', {'class': 'alert alert-danger'}, [err.toString()])]))
-			console.error(err);
-		}
+	}
 
-		document.addEventListener('readystatechange', () => {
-			if (document.readyState !== 'complete') return;
-			setup();
-		});
+	let input = document.getElementById('search-input');
+
+	let searchModal = document.getElementById('search-modal');
+
+	// Input set ID
+	keyInput.addEventListener("change", ev => {
+		localStorage.setItem('links-id', ev.target.value);
+		location.reload();
+	});
+
+	keyInput.value = localStorage.getItem("links-id");
+
+	Mousetrap(input).bind('enter', () => {
+		open('https://duckduckgo.com/?q=' + input.value.replace(/\s/g, '+'), '', 'noopener');
+		input.value = "";
+		searchModal.classList.add('hidden');
+	});
+	Mousetrap(input).bind('escape', () => {
+		input.value = "";
+		searchModal.classList.add('hidden');
+		Mousetrap.unbind('escape');
+	});
+
+	Mousetrap.bind(typeof config.searchKey === "string" ? config.searchKey : '\\', () => {
+		searchModal.classList.remove('hidden');
+		input.focus();
+	});
+}
+function errorHandler(err) {
+	main.appendChild(h('h', {'class': 'col'}, [h('div', {'class': 'alert alert-danger'}, [err.toString()])]))
+	console.error(err);
+}
+
+document.addEventListener('readystatechange', () => {
+	if (document.readyState !== 'complete') return;
+	setup();
+});
 
