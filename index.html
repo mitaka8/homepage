@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<link rel="stylesheet" href="./libs/bootstrap.min.css"/>
+	<link rel="stylesheet" href="./bootstrap.min.css"/>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-	<link href="css/styles.css" rel="stylesheet"/>
-	
 	<title>Homepage</title>
 </head>
 <body>
@@ -25,14 +23,71 @@
 					<div class="card-body">
 						<label for="key-input"><i class="material-icons tiny">share</i> Share ID:</label>
 						<input id="key-input" class="form-control"></input>
-					<a href="editor.html">Edit page</a>	
-						
 					</div>
 				</div>
 			</div>
 		</div>
+		<div class="row">
+			<div class="col-12 col-sm-1">
+				<span class="badge text-white bg-blue">blue</span>
+				<span class="badge text-white bg-indigo">indigo</span>
+				<span class="badge text-white bg-purple">purple</span>
+				<span class="badge text-white bg-pink">pink</span>
+				<span class="badge text-white bg-red">red</span>
+				<span class="badge text-dark bg-orange">orange</span>
+				<span class="badge text-dark bg-yellow">yellow</span>
+				<span class="badge text-white bg-green">green</span>
+				<span class="badge text-white bg-teal">teal</span>
+				<span class="badge text-white bg-cyan">cyan</span>
+				<span class="badge text-dark bg-white">white</span>
+				<span class="badge text-white bg-gray">gray</span>
+				<span class="badge text-white bg-gray-dark">gray-dark</span>
+
+			</div>
+			<div class="col-12 col-sm-11">
+				<label for="json-editor">JSON Editor</label>
+				<textarea class="form-control text-monospace mb-1" rows="14" id="json-editor"></textarea>
+				<label for="json-editor-key" title="">JSON Key</label>
+				<input class="form-control" id="json-editor-key"/>
+				<button class="btn btn-secondary" id="update">Update View</button>
+				<button class="btn btn-primary" id="save">Save</button>
+			</div>
+		</div>
 	</div>
-	
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<h2>Docs on the JSON values</h2>
+				<p>
+					The top-level object is the root of the JSON structure.  It's between the first pair of curly braces (<code>{}</code>).
+					This is where you define global settings for the page.  Such as Style, wallpaper and title.
+				</p>
+				<p>
+					The following settings are supported in the top-level object.
+				</p>
+				<ul>
+					<li><code>title</code> - The page title (which is the big header at the top of the page and on the tab)</li>
+					<li><code>style</code> - CSS to inject into the page.  This is useful for theming your homepage to your liking.</li>
+					<li><code>searchKey</code> - The keystroke that triggers the search popup to appear. (default: \)</li>
+					<li><code>wallpaper</code> - the URL to the background image to use.</li>
+					<li><code>links</code> - The list of widgets that are rendered on the page.</li>
+				</ul>
+				<h3>The links list</h3>
+				<p>
+				This list defined as <code>.links</code> is the list of widgets that are rendered on the page.  The following widgets are supported and allowed:
+				</p>
+				<ul>
+					<li>list - A list of links to show.  Takes as arguments: a list of Link objects, an icon name (as per material design icons), a title, and a color.</li>
+					<li>clock - A digital clock that shows the current time and date of your system. Takes no arguments.</li>
+					<li>buienrader - A weathermap of The Netherlands. Takes no arguments.</li>
+					<li>knmi - A weathermap of The Netherlands. Takes no arguments.</li>
+					<li>rss - A simple RSS feed reader.  Takes as arguments: resource: the url to the feed to read.</li>
+				</ul>
+				<h4>The link object</h4>
+				<p>The link object takes as arguments: title=the name of the link, href=the URL to point to, color=the color of the element, icon=a material design icon to show, shortcutKey=a sequence of keys to press to navigate to this url (mousetrap syntax).</p>
+			</div>
+		</div>
+	</div>
 	<div class="modal hidden" id="search-modal">
 		<div class="container" id="search-container">
 			<div class="body">
@@ -47,8 +102,400 @@
 			</div>
 		</div>
 	</div>
+	<style>
+.text-blue{color: var(--blue);}
+.text-indigo{color: var(--indigo);}
+.text-purple {color: var(--purple);}
+.text-pink{color: var(--pink);}
+.text-red{color: var(--red);}
+.text-orange{color: var(--orange);}
+.text-yellow{color: var(--yellow);}
+.text-green{color: var(--green);}
+.text-teal{color: var(--teal);}
+.text-cyan{color: var(--cyan);}
+.text-white{color: var(--white);}
+.text-gray{color: var(--gray);}
+.text-gray-dark{color: var(--gray-dark);}
+
+
+.bg-blue{background-color: var(--blue);}
+.bg-indigo{background-color: var(--indigo);}
+.bg-purple {background-color: var(--purple);}
+.bg-pink{background-color: var(--pink);}
+.bg-red{background-color: var(--red);}
+.bg-orange{background-color: var(--orange);}
+.bg-yellow{background-color: var(--yellow);}
+.bg-green{background-color: var(--green);}
+.bg-teal{background-color: var(--teal);}
+.bg-cyan{background-color: var(--cyan);}
+.bg-white{background-color: var(--white);}
+.bg-gray{background-color: var(--gray);}
+.bg-gray-dark{background-color: var(--gray-dark);}
+
+.border-blue{border-color: var(--blue);}
+.border-indigo{border-color: var(--indigo);}
+.border-purple {border-color: var(--purple);}
+.border-pink{border-color: var(--pink);}
+.border-red{border-color: var(--red);}
+.border-orange{border-color: var(--orange);}
+.border-yellow{border-color: var(--yellow);}
+.border-green{border-color: var(--green);}
+.border-teal{border-color: var(--teal);}
+.border-cyan{border-color: var(--cyan);}
+.border-white{border-color: var(--white);}
+.border-gray{border-color: var(--gray);}
+.border-gray-dark{border-color: var(--gray-dark);}
+
+
+
+.material-icons.tiny {vertical-align: bottom;}
+@media (min-width: 768px) {
+	.card-columns {
+		column-count: 3;
+	}
+}
+
+@media (min-width: 1100px) {
+	.card-columns {
+		column-count: 5;
+	}
+	
+}
+
+body {
+	background-attachment: fixed;
+	background-position: center;
+	background-size: cover;
+}
+
+.modal {
+  background-color: rgba(0,0,0,0.4); /* Transparent dimmed overlay */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: table;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal .container {
+ display: table-cell;
+ text-align: center;
+ vertical-align: middle;
+ width: 200px;
+}
+
+</style>
 <style id="custom-style"></style>
 </body>
-	<script src="libs/mousetrap.min.js"></script>
-	<script src="js/script.js"></script>
+	<script src="mousetrap.min.js"></script>
+	<script>
+		let config = {};
+		let main;
+		let jsonEditor;
+		let jsonEditorKey;
+		let keyInput;
+		let jsonEditorUpdateViewButton;
+		let jsonEditorSaveButton;
+		function setIntervalI(f, t) {
+			f();
+			return setInterval(f,t);
+		}
+
+		/** @return {Promise} */
+		function getElementsFromRSS(resource) {
+			return fetch('https://aphilian.nl/rss.php?r=' + encodeURIComponent(resource)).then(r => r.text()).then(res => {
+    				parser = new DOMParser();
+    				xmlDoc = parser.parseFromString(res, "text/xml");
+				let rssElem = xmlDoc.children[0];
+				return Array.prototype.map.call(rssElem.children[0].children, item => {
+					if (item.children.length === 0) return null;
+					return {
+						title: item.children[0].textContent,
+						link: item.children[1].textContent,
+					}
+				}).filter(x => x !== null);
+			})
+
+		}
+
+		function h(tag, attributes = {}, children = []) {
+			let element = document.createElement(tag);
+			
+			for(let key in attributes) {
+				if (!Object.hasOwnProperty.call(attributes, key)) continue;
+				element.setAttribute(key, attributes[key]);
+			}
+			
+			children.forEach(child => {
+				// Skip over empties
+				if (typeof child === "undefined" || child === null) return; 
+
+				if (typeof child === "string") {
+					let childText = document.createTextNode(child);
+					element.appendChild(childText);
+					return;
+				}
+
+				element.appendChild(child)
+			});
+			return element;
+		}
+
+		function widget(w) {
+			switch (w.widget) {
+				case 'clock':
+					let clockText = h('h3', {'class' : 'card-title'}, ['']);
+					let dateText = h('span', {}, ['']);
+					let element = h("div", {'class': 'card bg-dark'}, [
+						h('div', {'class': 'card-body'}, [
+							clockText,
+							dateText
+						])
+					]);
+					setIntervalI(() => {
+						let hours = (new Date).getHours().toString().padStart(2, "0");
+						let minutes = (new Date).getMinutes().toString().padStart(2, "0");
+						let year = (new Date).getFullYear().toString();
+						let month = ((new Date).getMonth() + 1).toString().padStart(2, "0");
+						let date = (new Date).getDate().toString().padStart(2, "0");
+						
+						if (clockText.firstChild.nodeValue !== `${hours}:${minutes}`) {
+							clockText.firstChild.nodeValue = `${hours}:${minutes}`
+						}
+
+						if (dateText.firstChild.nodeValue !== `${year}-${month}-${date}`) {
+							dateText.firstChild.nodeValue = `${year}-${month}-${date}`;
+						}
+					}, 500);
+					return element;
+
+				case 'buienradar':
+					return h('div', {'class': 'card'}, [
+						h('div', {'class': 'card-header'}, ['Weather Report by ', h('a', {'href': 'https://buienradar.nl/', 'target': '_blank', 'rel': 'nofollow'}, ['Buienradar']), '.']),
+						h('img', {'class': 'card-img','src': 'https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256'}, [])
+					]);
+				
+				case 'knmi':
+					return h('div', {'class': 'card'}, [
+						h('div', {'class': 'card-header'}, ['Weather Report by ', h('a', {'href': 'https://knmi.nl/', 'target': '_blank', 'rel': 'nofollow'}, ['KNMI']), '.']),
+						h('img', {'class': 'card-img', 'title': 'Weather by KNMI', 'src': 'https://cdn.knmi.nl/knmi/map/general/weather-map.gif'}, [])
+					]);
+				case 'rss':
+					let list = h('div', {'class': 'list-group list-group-flush'}, []);
+					let updateLinks = () => {
+						getElementsFromRSS(w.resource).then(links => {
+							
+							while (list.firstChild) {
+								list.removeChild(list.firstChild);
+							}
+							links.slice(0,5).forEach(link => {
+								list.appendChild(h('li', {'class':'list-group-item'}, [
+									h('a', {'href': link.link, 'rel': 'nofollow', 'target': '_blank'}, [link.title])
+								]));
+							})
+						});
+					}
+					setIntervalI(updateLinks, 3000000);
+					return h('div', {'class': 'card'}, [
+						h('div', {'class': 'card-header'}, [w.title]),
+						list,
+					]);
+						
+				default:
+					return h('div', {'class': 'card'}, [h('div', {'class': 'card-body text-white bg-danger'}, ['Unknown Widget Type: ' + name])])
+
+			}
+		}
+
+		function list(l) {
+			return h(
+				'div', 
+				{'class': 'card' + (Array.isArray(l.classes) ? (' ' + l.classes.join(' ')) : ""), 'id': typeof l.title === "string" ? "list-"+l.title.toLowerCase().replace(/\s\.\_\\\//g, "-") : undefined}, 
+				[
+					h('div', {'class': 'card-body'}, [
+						h('h3', {'class': 'card-title mb-0' + (typeof l.color === "string" ? " text-" + l.color : "") }, [
+							typeof l.icon === 'string' ? h('i', {'class': 'material-icons tiny'}, [l.icon]) : null,
+							typeof l.icon === 'string' ? " ": null,
+							l.title
+						]),
+					]),
+					h('ul', {'class': 'list-group list-group-flush'}, l.links.map(link => {
+                                                if (typeof link.shortcutKey === "string") {
+							Mousetrap.bind(link.shortcutKey, () => open(link.href, "", "noopener"));
+						}
+						
+						return h('li', {'class':'list-group-item d-flex justify-content-between align-items-center'}, [
+                                                         h('a', {'rel': 'noopener', 'target':'_blank', 'href': link.href, 'title': link.title, "class": typeof link.color === "string" ? "text-" + link.color : null}, [link.title]), 
+							 " ",
+							h('div', {}, [
+								typeof link.icon === 'string' ? h('i', {'class': 'material-icons tiny' + (typeof link.color === "string" ? " text-" + link.color : '')}, [link.icon]) : null,
+								" ", typeof link.shortcutKey === "string" ? h('kbd', {}, [link.shortcutKey]) : null,
+							]),
+                                                ])
+					})),
+				]
+			)
+		}
+
+		function renderMain() {
+			while (main.firstChild) {
+				main.removeChild(main.firstChild);
+			}
+			config.links.forEach(element => {
+				switch (element.type) {
+					case 'widget':
+						main.appendChild(widget(element));
+						break;
+					case undefined:
+					default:
+						main.appendChild(list(element));
+				}
+			});
+
+			if(typeof config.title === "string") {
+				document.title = config.title;
+				document.getElementById('document-title').firstChild.nodeValue = config.title;
+			}
+
+			if (typeof config.wallpaper === "string") {
+				document.body.style.backgroundImage = `url("${config.wallpaper}")`;
+			}
+
+
+			if (typeof config.style === "string") {
+				let style = document.getElementById('custom-style');
+
+				while (style.firstChild) {
+					style.removeChild(style.firstChild);
+				}
+
+				style.appendChild(document.createTextNode(config.style));
+			}
+		}
+
+		
+		function setup() {
+			main = document.getElementById('main');
+			keyInput = document.getElementById('key-input');
+			jsonEditor = document.getElementById('json-editor');
+			jsonEditorUpdateButton = document.getElementById('update');
+			jsonEditorKey = document.getElementById('json-editor-key');
+			jsonEditorSaveButton = document.getElementById('save');
+	
+			if(location.hash !== "" && location.hash.length === 129) {
+				localStorage.setItem('links-id', location.hash.substr(1));
+			}
+
+			let linkId = localStorage.getItem('links-id');
+			if (linkId === null || linkId === "") {
+				linkId = "";
+				config = {"title": "My Homepage", "links": [{"type":"widget", "widget": "knmi"}]};
+				renderMain();
+				document.getElementById('json-editor').value = JSON.stringify(config," ", 4);
+			} else {
+				if (localStorage.getItem('config-' + linkId) !== null) {
+					config = JSON.parse(localStorage.getItem('config-' + linkId));
+					renderMain();
+					document.getElementById('json-editor').value = JSON.stringify(config," ", 4);
+				} else {
+					fetch('config/' + linkId + '.json')
+					.then(res => res.json()).then(c => {
+						config = c;
+						renderMain();
+						document.getElementById('json-editor').value = JSON.stringify(c," ", 4);
+						localStorage.setItem('config-' + linkId, JSON.stringify(c));
+					}).catch(e => {
+						errorHandler(e);
+					});
+				}
+			}
+
+			// Input set ID
+			keyInput.addEventListener("change", ev => {
+				localStorage.setItem('links-id', ev.target.value);
+				location.reload();
+			});
+			keyInput.value = localStorage.getItem("links-id");
+			
+			jsonEditorUpdateButton.addEventListener("click", ev => {
+				try {
+					config = JSON.parse(jsonEditor.value);
+					renderMain();
+				} catch(e) {
+					errorHandler(e);
+				}
+			});
+
+			jsonEditorSaveButton.addEventListener("click", ev => {
+				try {
+					config = JSON.parse(jsonEditor.value);
+					renderMain();
+					save(jsonEditor.value, jsonEditorKey.value);
+				} catch(e) {
+
+					errorHandler(e);
+				}
+			});
+
+				let input = document.getElementById('search-input');
+
+			let searchModal = document.getElementById('search-modal');
+
+			Mousetrap(input).bind('enter', () => {
+				console.log('test');
+				open('https://duckduckgo.com/?q=' + input.value.replace(/\s/g, '+'), '', 'noopener');
+				input.value = "";
+				searchModal.classList.add('hidden');
+			});
+			Mousetrap(input).bind('escape', () => {
+				input.value = "";
+				searchModal.classList.add('hidden');
+				Mousetrap.unbind('escape');
+			});
+	
+			Mousetrap.bind(typeof config.searchKey === "string" ? config.searchKey : '\\', () => {
+				searchModal.classList.remove('hidden');
+				input.focus();
+			});
+		}
+
+		function save(config, key) {
+			if (key.length === 0) {
+				throw new Error("Key can not be 0");
+			}
+			if (config.length === 0) {
+				throw new Error("JSON Config can not be 0");
+			}
+			
+			let fd = new FormData();
+			fd.append("config", config);
+			fd.append("key", key);
+
+			fetch("/upload.php", {method:"POST", body: fd}).then(res => res.text()).then(key => {
+				keyInput.value = key;
+				localStorage.setItem('links-id', key);
+				location.hash = key;
+			});
+		}
+
+		function updateView() {
+			let c = JSON.parse(jsonEditor.value);
+		}
+
+		function errorHandler(err) {
+			main.appendChild(h('h', {'class': 'col'}, [h('div', {'class': 'alert alert-danger'}, [err.toString()])]))
+			console.error(err);
+		}
+
+		document.addEventListener('readystatechange', () => {
+			if (document.readyState !== 'complete') return;
+			setup();
+		});
+
+	</script>
 </html>
